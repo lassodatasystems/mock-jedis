@@ -20,6 +20,7 @@ public class MockStorage {
 	private final List<Map<DataContainer, Map<DataContainer, DataContainer>>> allHashStorage;
 	private final List<Map<DataContainer, List<DataContainer>>> allListStorage;
 	private final List<Map<DataContainer, Set<DataContainer>>> allSetStorage;
+	private final List<Map<DataContainer, TreeSet<DataContainer>>> allSortedSetStorage;
 
 	private int currentDB;
 	private Map<DataContainer, KeyInformation> keys;
@@ -27,6 +28,7 @@ public class MockStorage {
 	private Map<DataContainer, Map<DataContainer, DataContainer>> hashStorage;
 	private Map<DataContainer, List<DataContainer>> listStorage;
 	private Map<DataContainer, Set<DataContainer>> setStorage;
+	private Map<DataContainer, TreeSet<DataContainer>> sortedSetStorage;
 
 	public MockStorage() {
 		allKeys = new ArrayList<Map<DataContainer, KeyInformation>>(NUM_DBS);
@@ -34,12 +36,14 @@ public class MockStorage {
 		allHashStorage = new ArrayList<Map<DataContainer, Map<DataContainer, DataContainer>>>(NUM_DBS);
 		allListStorage = new ArrayList<Map<DataContainer, List<DataContainer>>>(NUM_DBS);
 		allSetStorage = new ArrayList<Map<DataContainer, Set<DataContainer>>>(NUM_DBS);
+		allSortedSetStorage = new ArrayList<Map<DataContainer, TreeSet<DataContainer>>>(NUM_DBS);
 		for (int i = 0; i < NUM_DBS; ++i) {
 			allKeys.add(new HashMap<DataContainer, KeyInformation>());
 			allStorage.add(new HashMap<DataContainer, DataContainer>());
 			allHashStorage.add(new HashMap<DataContainer, Map<DataContainer, DataContainer>>());
 			allListStorage.add(new HashMap<DataContainer, List<DataContainer>>());
 			allSetStorage.add(new HashMap<DataContainer, Set<DataContainer>>());
+			allSortedSetStorage.add(new HashMap<DataContainer, TreeSet<DataContainer>>());
 		}
 		select(0);
 	}
@@ -62,6 +66,8 @@ public class MockStorage {
 			allStorage.get(dbNum).clear();
 			allHashStorage.get(dbNum).clear();
 			allListStorage.get(dbNum).clear();
+			allSetStorage.get(dbNum).clear();
+			allSortedSetStorage.get(dbNum).clear();
 		}
 	}
 
@@ -70,6 +76,8 @@ public class MockStorage {
 		storage.clear();
 		hashStorage.clear();
 		listStorage.clear();
+		setStorage.clear();
+		sortedSetStorage.clear();
 	}
 
 	public synchronized void rename(final DataContainer oldkey, final DataContainer newkey) {
@@ -89,6 +97,10 @@ public class MockStorage {
 			case SET:
 				setStorage.put(newkey, setStorage.get(oldkey));
 				setStorage.remove(oldkey);
+				break;
+			case SORTED_SET:
+				sortedSetStorage.put(newkey, sortedSetStorage.get(oldkey));
+				sortedSetStorage.remove(oldkey);
 				break;
 			case STRING:
 			default:
@@ -191,6 +203,7 @@ public class MockStorage {
 		hashStorage = allHashStorage.get(dbIndex);
 		listStorage = allListStorage.get(dbIndex);
 		setStorage = allSetStorage.get(dbIndex);
+		sortedSetStorage = allSortedSetStorage.get(dbIndex);
 	}
 
 	public synchronized boolean pexpireAt(final DataContainer key, final long millisecondsTimestamp) {
@@ -424,6 +437,9 @@ public class MockStorage {
 				break;
 			case SET:
 				setStorage.remove(key);
+				break;
+			case SORTED_SET:
+				sortedSetStorage.remove(key);
 				break;
 			case STRING:
 			default:
@@ -703,6 +719,28 @@ public class MockStorage {
 		return setStorage.get(key);
 	}
 
+	protected TreeSet<DataContainer> getSortedSetFromStorage(final DataContainer key, final boolean createIfNotExist) {
+		final KeyInformation info = keys.get(key);
+		if (info == null) {
+			if (createIfNotExist) {
+				createOrUpdateKey(key, KeyType.SORTED_SET, false);
+				final TreeSet<DataContainer> result = new TreeSet<DataContainer>();
+				sortedSetStorage.put(key, result);
+				return result;
+			}
+			return null; // no such key exists
+		}
+		if (info.getType() != KeyType.SORTED_SET) {
+			throw new JedisDataException("ERR Operation against a key holding the wrong kind of value");
+		}
+		if (info.isTTLSetAndKeyExpired()) {
+			sortedSetStorage.remove(key);
+			keys.remove(key);
+			return null;
+		}
+		return sortedSetStorage.get(key);
+	}
+
 	public synchronized long sadd(final DataContainer key, final DataContainer... members) {
 		final Set<DataContainer> set = getSetFromStorage(key, true);
 
@@ -845,6 +883,11 @@ public class MockStorage {
 		}
 		dst.addAll(inter);
 		return inter.size();
+	}
+
+	public synchronized int zcard(final DataContainer key) {
+		final TreeSet<DataContainer> set = getSortedSetFromStorage(key, true);
+		return set.size();
 	}
 }
 

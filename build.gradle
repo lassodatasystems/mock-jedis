@@ -41,7 +41,7 @@ artifacts {
 signing {
     sign configurations.archives
 }
-
+/*
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -55,18 +55,18 @@ uploadArchives {
                name 'mock-jedis'
                packaging 'jar'
                description 'Mock Jedis is a library for mocking out Jedis clients'
-               url 'https://github.com/50onRed/mock-jedis'
+               url 'https://github.com/adamscherer/mock-jedis'
 
                scm {
-                   url 'scm:git@github.com:50onRed/mock-jedis.git'
-                   connection 'scm:git@github.com:50onRed/mock-jedis.git'
-                   developerConnection 'scm:git@github.com:50onRed/mock-jedis.git'
+                   url 'scm:git@github.com:adamscherer/mock-jedis.git'
+                   connection 'scm:git@github.com:adamscherer/mock-jedis.git'
+                   developerConnection 'scm:git@github.com:adamscherer/mock-jedis.git'
                }
 
                licenses {
                    license {
                        name 'MIT'
-                       url 'https://raw.github.com/50onRed/mock-jedis/master/LICENSE'
+                       url 'https://raw.github.com/adamscherer/mock-jedis/master/LICENSE'
                        distribution 'repo'
                    }
                }
@@ -75,9 +75,14 @@ uploadArchives {
                    developer {
                        id 'idyedov'
                        name 'Ivan Dyedov'
+                   },
+                   developer {
+                       id 'adamscherer'
+                       name 'Adam Scherer'
                    }
                }
            }
         }
     }
 }
+*/

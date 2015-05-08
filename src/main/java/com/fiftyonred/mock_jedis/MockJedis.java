@@ -845,12 +845,12 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Long zadd(String key, double score, String member) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+		return pipeline.zadd(key, score, member).get();
 	}
 
 	@Override
 	public Long zadd(String key, Map<String, Double> scoreMembers) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+		return pipeline.zadd(key, scoreMembers).get();
 	}
 
 	@Override
@@ -895,7 +895,7 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Long zcard(String key) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+		return pipeline.zcard(key).get();
 	}
 
 	@Override

@@ -1201,5 +1201,30 @@ public class MockPipeline extends Pipeline {
 		response.set((long) mockStorage.sunionstore(DataContainer.from(dstkey), DataContainer.from(keys)));
 		return response;
 	}
+
+	public Response<Long> zadd(String key, double score, String member) {
+		final Response<Long> response = new Response<Long>(BuilderFactory.LONG);
+		getClient(key).zadd(key, score, member);
+		return response;
+	}
+
+	public Response<Long> zadd(String key, Map<String, Double> scoreMembers) {
+		final Response<Long> response = new Response<Long>(BuilderFactory.LONG);
+		getClient(key).zadd(key, scoreMembers);
+		return response;
+	}
+
+	public Response<Long> zadd(byte[] key, double score, byte[] member) {
+		final Response<Long> response = new Response<Long>(BuilderFactory.LONG);
+		getClient(key).zadd(key, score, member);
+		return response;
+	}
+
+	@Override
+	public Response<Long> zcard(String key) {
+		final Response<Long> response = new Response<Long>(BuilderFactory.LONG);
+		response.set((long) mockStorage.zcard(DataContainer.from(key)));
+		return response;
+	}
 }
 
