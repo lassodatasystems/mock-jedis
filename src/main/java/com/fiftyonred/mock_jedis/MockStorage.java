@@ -29,15 +29,17 @@ public class MockStorage {
 	private Map<DataContainer, List<DataContainer>> listStorage;
 	private Map<DataContainer, Set<DataContainer>> setStorage;
 	private Map<DataContainer, TreeSet<DataContainer>> sortedSetStorage;
+    private Map<DataContainer, TreeSet<DataContainer>> scoredSortedStorage;
 
-	public MockStorage() {
+    public MockStorage() {
 		allKeys = new ArrayList<Map<DataContainer, KeyInformation>>(NUM_DBS);
 		allStorage = new ArrayList<Map<DataContainer, DataContainer>>(NUM_DBS);
 		allHashStorage = new ArrayList<Map<DataContainer, Map<DataContainer, DataContainer>>>(NUM_DBS);
 		allListStorage = new ArrayList<Map<DataContainer, List<DataContainer>>>(NUM_DBS);
 		allSetStorage = new ArrayList<Map<DataContainer, Set<DataContainer>>>(NUM_DBS);
 		allSortedSetStorage = new ArrayList<Map<DataContainer, TreeSet<DataContainer>>>(NUM_DBS);
-		for (int i = 0; i < NUM_DBS; ++i) {
+
+        for (int i = 0; i < NUM_DBS; ++i) {
 			allKeys.add(new HashMap<DataContainer, KeyInformation>());
 			allStorage.add(new HashMap<DataContainer, DataContainer>());
 			allHashStorage.add(new HashMap<DataContainer, Map<DataContainer, DataContainer>>());
@@ -885,9 +887,86 @@ public class MockStorage {
 		return inter.size();
 	}
 
+    public synchronized int zadd(final DataContainer key, double score, final String member) {
+        final TreeSet<DataContainer> set = getSortedSetFromStorage(key, true);
+        if(set.size() == 0) {
+            set.add(DataContainer.from(member, score));
+
+            return 1;
+
+        } else {
+            DataContainer value = find(set, member);
+            if(value != null) {
+                set.remove(value);
+                value.setScore(score);
+                set.add(value);
+            } else {
+                set.add(DataContainer.from(member, score));
+            }
+
+            return 0;
+        }
+    }
+
+    public synchronized double zincrby(final DataContainer key, double score, final String member) {
+        final TreeSet<DataContainer> set = getSortedSetFromStorage(key, true);
+        if(set.size() == 0) {
+            set.add(DataContainer.from(member, score));
+        } else {
+            DataContainer value = find(set, member);
+            if(value != null) {
+                set.remove(value);
+                if(value.getScore() != null) {
+                    value.setScore(value.getScore() + score);
+                } else {
+                    value.setScore(score);
+                }
+                set.add(value);
+
+                return value.getScore();
+
+            } else {
+                set.add(DataContainer.from(member, score));
+            }
+        }
+
+        return score;
+    }
+
 	public synchronized int zcard(final DataContainer key) {
 		final TreeSet<DataContainer> set = getSortedSetFromStorage(key, true);
 		return set.size();
 	}
+
+    public synchronized Double zscore(final DataContainer key, final DataContainer member) {
+        final TreeSet<DataContainer> set = getSortedSetFromStorage(key, true);
+        DataContainer value = find(set, member);
+        if(value == null) {
+            return null;
+        }
+        return value.getScore();
+    }
+
+    protected DataContainer find(TreeSet<DataContainer> set, String member) {
+        return find(set, DataContainer.from(member));
+    }
+
+    protected DataContainer find(TreeSet<DataContainer> set, DataContainer member) {
+        List<DataContainer> sortedList = new ArrayList<DataContainer>(set);
+        int index = Collections.binarySearch(sortedList, member, new SearchComparator());
+        if(index >= 0) {
+            return sortedList.get(index);
+        }
+
+        return null;
+    }
+
+    protected class SearchComparator implements Comparator<DataContainer> {
+
+        @Override
+        public int compare(DataContainer o1, DataContainer o2) {
+            return o1.toString().compareTo(o2.toString());
+        }
+    }
 }
 

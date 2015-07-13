@@ -19,6 +19,7 @@ public class DataContainer implements Comparable<DataContainer> {
 	private final String string;
 	private final Source source;
 	private final int hash;
+    private Double score;
 
 	private DataContainer(byte[] bytes, String string, Source source) {
 		this.bytes = bytes;
@@ -26,6 +27,11 @@ public class DataContainer implements Comparable<DataContainer> {
 		this.source = source;
 		this.hash = calculateHash(bytes, string, source);
 	}
+
+    private DataContainer(byte[] bytes, String string, Source source, Double score) {
+        this(bytes, string, source);
+        this.score = score;
+    }
 
 	public static DataContainer from(byte[] bytes) {
 		if (bytes == null) {
@@ -54,6 +60,14 @@ public class DataContainer implements Comparable<DataContainer> {
 		}
 		return result;
 	}
+
+    public static DataContainer from(final String str, final Double score) {
+        if (str == null) {
+            return null;
+        }
+        byte[] bytes = str.getBytes(CHARSET);
+        return new DataContainer(bytes, str, Source.STRING, score);
+    }
 
 	public static DataContainer[] from(byte[][] byteArrays) {
 		if (byteArrays == null) {
@@ -182,9 +196,25 @@ public class DataContainer implements Comparable<DataContainer> {
 
 	@Override
 	public int compareTo(DataContainer o) {
-		// compare string representation of data (in the same way as redis does)
+        if(score != null && o.score != null) {
+            //if score exists, then compare by score
+            int result = score.compareTo(o.getScore());
+            if(result == 0) {
+                return string.compareTo(o.getString());
+            }
+        }
+
+        // compare string representation of data (in the same way as redis does)
 		return string.compareTo(o.getString());
 	}
+
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
 
 	public enum Source {
 		BYTES,

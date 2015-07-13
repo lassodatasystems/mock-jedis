@@ -9,6 +9,7 @@ import redis.clients.jedis.exceptions.JedisDataException;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class MockJedisTest {
 	private Jedis j = null;
@@ -216,4 +217,36 @@ public class MockJedisTest {
 		j.select(5);
 		assertEquals(1L, j.dbSize().longValue());
 	}
+
+    @Test
+    public void testZadd() {
+        assertEquals(Long.valueOf(1), j.zadd("test", 1.0, "John"));
+        assertEquals(Long.valueOf(0), j.zadd("test", 5.0, "John"));
+    }
+
+    @Test
+    public void testZscore() {
+        j.zadd("test", 1.0, "John");
+        j.zadd("test", 8.0, "Abbey");
+
+        assertEquals(1.0, j.zscore("test", "John"), 0.0);
+        assertEquals(8.0, j.zscore("test", "Abbey"), 0.0);
+
+        j.zadd("test", 5.0, "John");
+
+        assertEquals(5.0, j.zscore("test", "John"), 0.0);
+    }
+
+    @Test
+    public void testZincrBy() {
+        j.zadd("test", 1.0, "John");
+        j.zadd("test", 8.0, "Abbey");
+
+        assertEquals(1.0, j.zscore("test", "John"), 0.0);
+        assertEquals(8.0, j.zscore("test", "Abbey"), 0.0);
+
+        j.zincrby("test", 5.0, "John");
+
+        assertEquals(6.0, j.zscore("test", "John"), 0.0);
+    }
 }

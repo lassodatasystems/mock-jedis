@@ -1,12 +1,12 @@
 package com.fiftyonred.mock_jedis;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import redis.clients.jedis.*;
 import redis.clients.util.Pool;
 import redis.clients.util.Slowlog;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class MockJedis extends Jedis {
 
@@ -865,7 +865,7 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Double zincrby(String key, double score, String member) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+	    return pipeline.zincrby(key, score, member).get();
 	}
 
 	@Override
@@ -900,7 +900,7 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Double zscore(String key, String member) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+		return pipeline.zscore(key, member).get();
 	}
 
 	@Override
