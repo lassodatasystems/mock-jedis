@@ -860,7 +860,7 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Long zrem(String key, String... members) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+		return pipeline.zrem(key, members).get();
 	}
 
 	@Override
@@ -1585,7 +1585,7 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Long zrem(byte[] key, byte[]... members) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+		return pipeline.zrem(key, members).get();
 	}
 
 	@Override

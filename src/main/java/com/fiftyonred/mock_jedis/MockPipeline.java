@@ -1312,5 +1312,19 @@ public class MockPipeline extends Pipeline {
         response.set(result);
         return response;
     }
+
+    @Override
+    public Response<Long> zrem(String key, String... members) {
+        final Response<Long> response = getResponse(BuilderFactory.LONG);
+        response.set(mockStorage.zrem(DataContainer.from(key), members));
+        return response;
+    }
+
+    @Override
+    public Response<Long> zrem(byte[] key, byte[]... members) {
+        final Response<Long> response = getResponse(BuilderFactory.LONG);
+        response.set(mockStorage.zrem(DataContainer.from(key), members));
+        return response;
+    }
 }
 

@@ -281,4 +281,15 @@ public class MockJedisTest {
 
         assertEquals(Long.valueOf(2), j.zcard("test"));
     }
+
+    @Test
+    public void testZrem() {
+        j.zadd("test", 1.0, "John");
+        j.zadd("test", 8.0, "Abbey");
+        j.zadd("test", 1.0, "Jack");
+
+        assertEquals(Long.valueOf(1), j.zrem("test", "John"));
+        assertEquals(Long.valueOf(2), j.zcard("test"));
+        assertEquals(Long.valueOf(0), j.zrem("test", "Bob"));
+    }
 }

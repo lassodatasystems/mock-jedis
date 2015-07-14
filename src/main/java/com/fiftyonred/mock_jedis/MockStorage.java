@@ -988,6 +988,39 @@ public class MockStorage {
         return null;
     }
 
+    public synchronized Long zrem(DataContainer key, byte[]... items) {
+        List<DataContainer> members = new ArrayList<DataContainer>();
+        for(byte[] item : items) {
+            members.add(DataContainer.from(item));
+        }
+
+        return zrem(key, members);
+    }
+
+    public synchronized Long zrem(DataContainer key, String... items) {
+        List<DataContainer> members = new ArrayList<DataContainer>();
+        for(String item : items) {
+            members.add(DataContainer.from(item));
+        }
+
+        return zrem(key, members);
+    }
+
+    protected synchronized Long zrem(DataContainer key, Collection<DataContainer> members) {
+        Long itemsRemoved = 0L;
+        TreeSet<DataContainer> set = getSortedSetFromStorage(key, true);
+        for(DataContainer member : members) {
+            DataContainer existing = find(set, member);
+            if(existing != null) {
+                set.remove(existing);
+
+                itemsRemoved++;
+            }
+        }
+
+        return itemsRemoved;
+    }
+
     protected synchronized DataContainer find(TreeSet<DataContainer> set, DataContainer member) {
         for(DataContainer item : set) {
             if(item.equals(member)) {
