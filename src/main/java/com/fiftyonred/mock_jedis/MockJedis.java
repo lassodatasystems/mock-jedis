@@ -870,13 +870,23 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Long zrank(String key, String member) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+		Response<Long> response = pipeline.zrank(key, member);
+        if(response == null) {
+            return null;
+        }
+
+        return response.get();
 	}
 
 	@Override
 	public Long zrevrank(String key, String member) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
-	}
+        Response<Long> response = pipeline.zrevrank(key, member);
+        if(response == null) {
+            return null;
+        }
+
+        return response.get();
+    }
 
 	@Override
 	public Set<String> zrevrange(String key, long start, long end) {
@@ -1555,7 +1565,12 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Long zadd(byte[] key, double score, byte[] member) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+        Response<Long> response = pipeline.zadd(key, score, member);
+        if(response == null) {
+            return null;
+        }
+
+        return response.get();
 	}
 
 	@Override
@@ -1575,18 +1590,33 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Double zincrby(byte[] key, double score, byte[] member) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+        Response<Double> response = pipeline.zincrby(key, score, member);
+        if(response == null) {
+            return null;
+        }
+
+        return response.get();
 	}
 
 	@Override
 	public Long zrank(byte[] key, byte[] member) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+		Response<Long> response = pipeline.zrank(key, member);
+        if(response == null) {
+            return null;
+        }
+
+        return response.get();
 	}
 
 	@Override
 	public Long zrevrank(byte[] key, byte[] member) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
-	}
+        Response<Long> response = pipeline.zrevrank(key, member);
+        if(response == null) {
+            return null;
+        }
+
+        return response.get();
+    }
 
 	@Override
 	public Set<byte[]> zrevrange(byte[] key, long start, long end) {

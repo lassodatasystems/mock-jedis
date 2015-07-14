@@ -69,6 +69,15 @@ public class DataContainer implements Comparable<DataContainer> {
         return new DataContainer(bytes, str, Source.STRING, score);
     }
 
+    public static DataContainer from(final byte[] bytes, final Double score) {
+        if (bytes == null) {
+            return null;
+        }
+        byte[] copy = Arrays.copyOf(bytes, bytes.length);
+        String str = new String(copy, Charset.defaultCharset());
+        return new DataContainer(copy, str, Source.BYTES, score);
+    }
+
 	public static DataContainer[] from(byte[][] byteArrays) {
 		if (byteArrays == null) {
 			return null;
@@ -196,16 +205,12 @@ public class DataContainer implements Comparable<DataContainer> {
 
 	@Override
 	public int compareTo(DataContainer o) {
-        if(score != null && o.score != null) {
-            //if score exists, then compare by score
-            int result = score.compareTo(o.getScore());
-            if(result == 0) {
-                return string.compareTo(o.getString());
-            }
+        if(o.getScore() == null || score == null || o.getScore().equals(score)) {
+            // compare string representation of data (in the same way as redis does)
+            return string.compareTo(o.getString());
         }
 
-        // compare string representation of data (in the same way as redis does)
-		return string.compareTo(o.getString());
+        return score.compareTo(o.getScore());
 	}
 
     public Double getScore() {

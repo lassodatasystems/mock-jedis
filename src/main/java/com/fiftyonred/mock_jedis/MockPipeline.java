@@ -1202,24 +1202,6 @@ public class MockPipeline extends Pipeline {
 		return response;
 	}
 
-/*	public Response<Long> zadd(String key, double score, String member) {
-		final Response<Long> response = new Response<Long>(BuilderFactory.LONG);
-		getClient(key).zadd(key, score, member);
-		return response;
-	}
-
-	public Response<Long> zadd(String key, Map<String, Double> scoreMembers) {
-		final Response<Long> response = new Response<Long>(BuilderFactory.LONG);
-		getClient(key).zadd(key, scoreMembers);
-		return response;
-	}
-
-	public Response<Long> zadd(byte[] key, double score, byte[] member) {
-		final Response<Long> response = new Response<Long>(BuilderFactory.LONG);
-		getClient(key).zadd(key, score, member);
-		return response;
-	}*/
-
     @Override
     public Response<Long> zadd(String key, double score, String member) {
         final Response<Long> response = getResponse(BuilderFactory.LONG);
@@ -1229,7 +1211,9 @@ public class MockPipeline extends Pipeline {
 
     @Override
     public Response<Long> zadd(byte[] key, double score, byte[] member) {
-        return zadd(String.valueOf(key), score, String.valueOf(member));
+        final Response<Long> response = getResponse(BuilderFactory.LONG);
+        response.set(Long.valueOf(mockStorage.zadd(DataContainer.from(key), score, member)));
+        return response;
     }
 
     @Override
@@ -1249,6 +1233,13 @@ public class MockPipeline extends Pipeline {
     }
 
     @Override
+    public Response<Double> zincrby(byte[] key, double score, byte[] member) {
+        final Response<Double> response = getResponse(BuilderFactory.DOUBLE);
+        response.set(String.valueOf(mockStorage.zincrby(DataContainer.from(key), score, member)).getBytes());
+        return response;
+    }
+
+    @Override
 	public Response<Long> zcard(String key) {
 		final Response<Long> response = getResponse(BuilderFactory.LONG);
 		response.set((long) mockStorage.zcard(DataContainer.from(key)));
@@ -1256,9 +1247,69 @@ public class MockPipeline extends Pipeline {
 	}
 
     @Override
+    public Response<Long> zcard(byte[] key) {
+        final Response<Long> response = getResponse(BuilderFactory.LONG);
+        response.set((long) mockStorage.zcard(DataContainer.from(key)));
+        return response;
+    }
+
+    @Override
     public Response<Double> zscore(String key, String member) {
+        Double result = mockStorage.zscore(DataContainer.from(key), DataContainer.from(member));
+        if(result == null) {
+            return null;
+        }
+
         final Response<Double> response = getResponse(BuilderFactory.DOUBLE);
-        response.set(String.valueOf(mockStorage.zscore(DataContainer.from(key), DataContainer.from(member))).getBytes());
+        response.set(String.valueOf(result).getBytes());
+        return response;
+    }
+
+    @Override
+    public Response<Double> zscore(byte[] key, byte[] member) {
+        Double result = mockStorage.zscore(DataContainer.from(key), DataContainer.from(member));
+        if(result == null) {
+            return null;
+        }
+
+        final Response<Double> response = getResponse(BuilderFactory.DOUBLE);
+        response.set(String.valueOf(result).getBytes());
+        return response;
+    }
+
+    @Override
+    public Response<Long> zrank(String key, String member) {
+        Long result = mockStorage.zrank(DataContainer.from(key), DataContainer.from(member));
+        if(result == null) {
+            return null;
+        }
+
+        final Response<Long> response = getResponse(BuilderFactory.LONG);
+        response.set(result);
+        return response;
+    }
+
+    @Override
+    public Response<Long> zrank(byte[] key, byte[] member) {
+        Long result = mockStorage.zrank(DataContainer.from(key), DataContainer.from(member));
+        if(result == null) {
+            return null;
+        }
+
+        final Response<Long> response = getResponse(BuilderFactory.LONG);
+        response.set(result);
+        return response;
+    }
+
+    @Override
+    public Response<Long> zrevrank(String key, String member) {
+        Long result = mockStorage.zrevrank(DataContainer.from(key), DataContainer.from(member));
+        if(result == null) {
+            return null;
+        }
+
+        final Response<Long> response = getResponse(BuilderFactory.LONG);
+        response.set(result);
         return response;
     }
 }

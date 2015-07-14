@@ -228,13 +228,37 @@ public class MockJedisTest {
     public void testZscore() {
         j.zadd("test", 1.0, "John");
         j.zadd("test", 8.0, "Abbey");
+        j.zadd("test", 1.0, "Jack");
 
         assertEquals(1.0, j.zscore("test", "John"), 0.0);
         assertEquals(8.0, j.zscore("test", "Abbey"), 0.0);
+        assertEquals(1.0, j.zscore("test", "Jack"), 0.0);
 
         j.zadd("test", 5.0, "John");
 
         assertEquals(5.0, j.zscore("test", "John"), 0.0);
+    }
+
+    @Test
+    public void testZrank() {
+        j.zadd("test", 1.0, "John");
+        j.zadd("test", 8.0, "Abbey");
+        j.zadd("test", 1.0, "Jack");
+
+        assertEquals(Long.valueOf(1), j.zrank("test", "John"));
+        assertEquals(Long.valueOf(2), j.zrank("test", "Abbey"));
+        assertEquals(Long.valueOf(0), j.zrank("test", "Jack"));
+    }
+
+    @Test
+    public void testZrezrank() {
+        j.zadd("test", 1.0, "John");
+        j.zadd("test", 8.0, "Abbey");
+        j.zadd("test", 1.0, "Jack");
+
+        assertEquals(Long.valueOf(1), j.zrevrank("test", "John"));
+        assertEquals(Long.valueOf(0), j.zrevrank("test", "Abbey"));
+        assertEquals(Long.valueOf(2), j.zrevrank("test", "Jack"));
     }
 
     @Test
