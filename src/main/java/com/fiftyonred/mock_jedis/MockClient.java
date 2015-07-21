@@ -2,6 +2,9 @@ package com.fiftyonred.mock_jedis;
 
 import redis.clients.jedis.Client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author rhosseini
  * @date 7/15/15
@@ -9,6 +12,8 @@ import redis.clients.jedis.Client;
 public class MockClient extends Client {
 
     boolean isInMulti;
+
+    boolean isConnected;
 
     public MockClient(String host) {
         super(host);
@@ -31,11 +36,31 @@ public class MockClient extends Client {
 
     @Override
     public void disconnect() {
-        super.disconnect();    //To change body of overridden methods use File | Settings | File Templates.
     }
 
     @Override
-    public void discard() {
-        super.discard();    //To change body of overridden methods use File | Settings | File Templates.
+    public void connect() {
+        this.isConnected = true;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    @Override
+    public List<Object> getAll(int except) {
+        return getAll();
+    }
+
+    @Override
+    public List<Object> getAll() {
+        return new ArrayList<Object>();
+    }
+
+    @Override
+    public List<Object> getObjectMultiBulkReply() {
+        return new ArrayList<Object>();
     }
 }
+

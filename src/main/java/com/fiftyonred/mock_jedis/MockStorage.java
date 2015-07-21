@@ -1027,6 +1027,26 @@ public class MockStorage {
         return results;
     }
 
+    public List<byte[]> zrevrangeWithScores(DataContainer key, long start, long end) {
+        List<byte[]> results = new ArrayList<byte[]>();
+        TreeSet<DataContainer> set = getSortedSetFromStorage(key, true);
+        int offsetCount = 0;
+        for(DataContainer value : set.descendingSet()) {
+            if(offsetCount >= start && offsetCount <= end) {
+                results.add(value.getBytes());
+                results.add(String.valueOf(value.getScore()).getBytes());
+            }
+
+            if(offsetCount >= end) {
+                break;
+            }
+
+            offsetCount++;
+        }
+
+        return results;
+    }
+
     protected synchronized Long zrem(DataContainer key, Collection<DataContainer> members) {
         Long itemsRemoved = 0L;
         TreeSet<DataContainer> set = getSortedSetFromStorage(key, true);

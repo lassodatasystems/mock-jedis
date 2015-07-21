@@ -18,10 +18,11 @@ public class MockJedis extends Jedis {
 
 	public MockJedis(final String host) {
 		super(host);
+        init();
     }
 
     public void init() {
-        this.client = new MockClient(null);
+        this.client = new MockClient("mock");
         this.pipeline = new MockPipeline((MockClient)client, storage);
     }
 
@@ -906,7 +907,7 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Set<Tuple> zrevrangeWithScores(String key, long start, long end) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+        return pipeline.zrevrangeWithScores(key, start, end).get();
 	}
 
 	@Override
@@ -1636,8 +1637,8 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Set<Tuple> zrevrangeWithScores(byte[] key, long start, long end) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
-	}
+        return pipeline.zrevrangeWithScores(key, start, end).get();
+    }
 
 	@Override
 	public Long zcard(byte[] key) {
@@ -1651,7 +1652,8 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Transaction multi() {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+
+        return new Transaction(client);
 	}
 
 	@Override

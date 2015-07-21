@@ -4,12 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.SortingParams;
+import redis.clients.jedis.Tuple;
 import redis.clients.jedis.exceptions.JedisDataException;
 
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class MockJedisTest {
 	private Jedis j = null;
@@ -291,5 +291,20 @@ public class MockJedisTest {
         assertEquals(Long.valueOf(1), j.zrem("test", "John"));
         assertEquals(Long.valueOf(2), j.zcard("test"));
         assertEquals(Long.valueOf(0), j.zrem("test", "Bob"));
+    }
+
+    @Test
+    public void testZrevrangeWithScores() {
+        j.zadd("test", 1.0, "John");
+        j.zadd("test", 8.0, "Abbey");
+        j.zadd("test", 2.0, "Jack");
+
+        Set<Tuple> results = j.zrevrangeWithScores("test", 0, 1);
+
+        assertEquals(2, results.size());
+
+        List<Tuple> list = new ArrayList<Tuple>(results);
+        assertEquals(8.0, list.get(0).getScore(), 0.0);
+        assertEquals(2.0, list.get(1).getScore(), 0.0);
     }
 }
