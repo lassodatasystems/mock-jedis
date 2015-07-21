@@ -886,15 +886,15 @@ public class MockStorage {
 		return inter.size();
 	}
 
-    public synchronized int zadd(DataContainer key, double score, String member) {
+    public synchronized long zadd(DataContainer key, double score, String member) {
         return zadd(key, DataContainer.from(member, score));
     }
 
-    public synchronized int zadd(DataContainer key, double score, byte[] member) {
+    public synchronized long zadd(DataContainer key, double score, byte[] member) {
         return zadd(key, DataContainer.from(member, score));
     }
 
-    protected synchronized int zadd(DataContainer key, DataContainer member) {
+    protected synchronized long zadd(DataContainer key, DataContainer member) {
         final TreeSet<DataContainer> set = getSortedSetFromStorage(key, true);
         if(set.size() == 0) {
             set.add(member);
@@ -1004,6 +1004,27 @@ public class MockStorage {
         }
 
         return zrem(key, members);
+    }
+
+    public List<byte[]> zrevrangeByScore(DataContainer key, double max, double min, int offset, int count) {
+        List<byte[]> results = new ArrayList<byte[]>();
+        TreeSet<DataContainer> set = getSortedSetFromStorage(key, true);
+        int offsetCount = 0;
+        for(DataContainer value : set.descendingSet()) {
+            if(results.size() == count) {
+                return results;
+            }
+
+            if(offsetCount >= offset) {
+                if(value.getScore() >= min && value.getScore() <= max) {
+                    results.add(value.getBytes());
+                }
+            }
+
+            offsetCount++;
+        }
+
+        return results;
     }
 
     protected synchronized Long zrem(DataContainer key, Collection<DataContainer> members) {

@@ -12,12 +12,18 @@ public class MockJedis extends Jedis {
 
 	public static final String NOT_IMPLEMENTED = "Not implemented";
 
-	private final MockPipeline pipeline;
+    private MockStorage storage = new MockStorage();
+
+    private MockPipeline pipeline;
 
 	public MockJedis(final String host) {
 		super(host);
-		pipeline = new MockPipeline();
-	}
+    }
+
+    public void init() {
+        this.client = new MockClient(null);
+        this.pipeline = new MockPipeline((MockClient)client, storage);
+    }
 
 	@Override
 	public Long getDB() {
@@ -1635,12 +1641,12 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Long zcard(byte[] key) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+		return pipeline.zcard(key).get();
 	}
 
 	@Override
 	public Double zscore(byte[] key, byte[] member) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+		return pipeline.zscore(key, member).get();
 	}
 
 	@Override
@@ -1775,7 +1781,7 @@ public class MockJedis extends Jedis {
 
 	@Override
 	public Set<byte[]> zrevrangeByScore(byte[] key, double max, double min, int offset, int count) {
-		throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+        return pipeline.zrevrangeByScore(key, max, min, offset, count).get();
 	}
 
 	@Override
