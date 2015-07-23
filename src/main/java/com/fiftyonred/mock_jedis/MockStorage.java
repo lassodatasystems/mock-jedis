@@ -972,7 +972,7 @@ public class MockStorage {
             rank++;
         }
 
-        return null;
+        return -1L;
     }
 
     public synchronized Long zrevrank(DataContainer key, DataContainer member) {
@@ -985,7 +985,7 @@ public class MockStorage {
             rank++;
         }
 
-        return null;
+        return -1L;
     }
 
     public synchronized Long zrem(DataContainer key, byte[]... items) {

@@ -1293,13 +1293,8 @@ public class MockPipeline extends Pipeline {
     }
 
     protected Response<Long> zrank(DataContainer key, DataContainer member) {
-        Long result = mockStorage.zrank(key, member);
-        if(result == null) {
-            result = 0L;
-        }
-
         final Response<Long> response = getResponse(BuilderFactory.LONG);
-        response.set(result);
+        response.set(mockStorage.zrank(key, member));
         return response;
     }
 
@@ -1314,13 +1309,8 @@ public class MockPipeline extends Pipeline {
     }
 
     protected Response<Long> zrevrank(DataContainer key, DataContainer member) {
-        Long result = mockStorage.zrevrank(key, member);
-        if(result == null) {
-            result = 0L;
-        }
-
         final Response<Long> response = getResponse(BuilderFactory.LONG);
-        response.set(result);
+        response.set(mockStorage.zrevrank(key, member));
         return response;
     }
 
