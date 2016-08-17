@@ -132,6 +132,8 @@ public class DataContainer implements Comparable<DataContainer> {
 	/**
 	 * Return data from this container. If container is created from String, then it returns sequence of bytes of that
 	 * string encoded in UTF-8.
+	 *
+	 * @return byte[]
 	 */
 	public byte[] getBytes() {
 		return bytes;

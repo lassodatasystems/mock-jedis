@@ -38,9 +38,9 @@ artifacts {
     archives sourcesJar
 }
 
-signing {
+/*signing {
     sign configurations.archives
-}
+}*/
 /*
 uploadArchives {
     repositories {

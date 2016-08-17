@@ -7,7 +7,6 @@ import java.util.List;
 
 /**
  * @author rhosseini
- * @date 7/15/15
  */
 public class MockClient extends Client {
 
