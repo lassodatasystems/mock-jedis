@@ -1227,6 +1227,7 @@ public class MockPipeline extends Pipeline {
         for(Map.Entry<String, Double> scoreMember : scoreMembers.entrySet()) {
             zadd(key, scoreMember.getValue(), scoreMember.getKey());
         }
+		response.set(1L);
         return response;
     }
 
