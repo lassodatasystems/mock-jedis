@@ -1283,6 +1283,13 @@ public class MockPipeline extends Pipeline {
         return response;
     }
 
+	@Override
+	public Response<Set<String>> zrange(final String key, final long start, final long end){
+		final Response<Set<String>> response = getResponse(BuilderFactory.STRING_SET);
+		response.set(mockStorage.zrange(DataContainer.from(key), start, end));
+		return response;
+	}
+
     @Override
     public Response<Long> zrank(String key, String member) {
         return zrank(DataContainer.from(key), DataContainer.from(member));

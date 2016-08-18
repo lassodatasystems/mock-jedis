@@ -6,8 +6,11 @@ import redis.clients.jedis.SortingParams;
 import redis.clients.jedis.exceptions.JedisDataException;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.fiftyonred.mock_jedis.DataContainer.CHARSET;
+import static java.lang.Math.toIntExact;
 
 public class MockStorage {
 
@@ -961,6 +964,19 @@ public class MockStorage {
         }
         return value.getScore();
     }
+
+	public synchronized List<byte[]> zrange(DataContainer key, long start, long end){
+		final TreeSet<DataContainer> set = getSortedSetFromStorage(key, false);
+		final List<String> list = set.stream()
+									 .map(DataContainer::getString)
+									 .collect(Collectors.toList());
+
+		int intStart = toIntExact(start);
+		int intEnd = toIntExact(end);
+		return IntStream.range(intStart, intEnd == -1 ? list.size() : intEnd)
+						.mapToObj(i -> list.get(i).getBytes())
+						.collect(Collectors.toList());
+	}
 
     public synchronized Long zrank(DataContainer key, DataContainer member) {
         long rank = 0;

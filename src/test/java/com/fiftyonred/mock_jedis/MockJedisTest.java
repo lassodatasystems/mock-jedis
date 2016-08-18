@@ -307,4 +307,19 @@ public class MockJedisTest {
         assertEquals(8.0, list.get(0).getScore(), 0.0);
         assertEquals(2.0, list.get(1).getScore(), 0.0);
     }
+
+	@Test
+	public void testZrange(){
+		final Map<String, Double> map = new HashMap<>();
+		map.put("John", 1.0);
+		map.put("Abbey", 8.0);
+		map.put("Jack", 2.0);
+
+		j.zadd("test", map);
+
+		List<String> results = new ArrayList<>(j.zrange("test", 0, -1));
+		assertEquals(results.get(0), "John");
+		assertEquals(results.get(1), "Jack");
+		assertEquals(results.get(2), "Abbey");
+	}
 }
