@@ -321,5 +321,22 @@ public class MockJedisTest {
 		assertEquals(results.get(0), "John");
 		assertEquals(results.get(1), "Jack");
 		assertEquals(results.get(2), "Abbey");
+
+		j.del("test");
+
+		final Map<String, Double> map2 = new HashMap<>();
+		map2.put("Clark", 4.0);
+		map2.put("Kent", 2.0);
+		map2.put("Superman", 3.0);
+		map2.put("Boom", 1.0);
+
+		j.zadd("test", map2);
+
+		List<String> results2 = new ArrayList<>(j.zrange("test", 0, -1));
+
+		assertEquals(results2.get(0), "Boom");
+		assertEquals(results2.get(1), "Kent");
+		assertEquals(results2.get(2), "Superman");
+		assertEquals(results2.get(3), "Clark");
 	}
 }
